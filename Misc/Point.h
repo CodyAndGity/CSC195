@@ -34,6 +34,12 @@ namespace math {
 			return ostream;
 		}
 
+		friend std::istream& operator >> (std::istream& istream,  Point<T>& point) {
+			istream >> point.x;
+			istream >> point.y;
+			return istream;
+		}
+
 		T getX() const { return x; }
 		T getY() const { return y; }
 	private:
