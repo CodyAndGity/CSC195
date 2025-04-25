@@ -55,9 +55,9 @@ namespace mathlib {
 				return *this;//cant do floats
 			}
 			
-			if (isSimple(numerator) && isSimple(denominator)) {
-				return *this;//already simplified
-			}
+			//if (isSimple(numerator) || isSimple(denominator)) {
+			//	return *this;//already simplified
+			//}
 			Fraction<float> tempFraction;
 			type gcdNum1;
 			type gcdNum2;
@@ -80,7 +80,7 @@ namespace mathlib {
 				tempFraction.setNumerator(-1*tempFraction.getNumerator());
 				tempFraction.setDenominator(-1*tempFraction.getDenominator());
 			};//reacllocate the negative sign
-			if (isSimple(tempFraction.getDenominator()) && isSimple(tempFraction.getDenominator())) {
+			if (isSimple(tempFraction.getNumerator()) || isSimple(tempFraction.getDenominator())) {
 				type returnNumerator = (type)tempFraction.getNumerator();
 				type returnDenominator = (type)tempFraction.getDenominator();
 				Fraction<type> returnFraction(returnNumerator, returnDenominator);
@@ -106,12 +106,12 @@ namespace mathlib {
 			//Fraction<type> A((type)tempFraction.getNumerator,(type)tempFraction.getDenominator);
 			type returnNumerator = (type)tempFraction.getNumerator();
 			type returnDenominator = (type)tempFraction.getDenominator();
-			Fraction<type> returnFraction(returnNumerator, returnNumerator);
+			Fraction<type> returnFraction(returnNumerator, returnDenominator);
 
 			return returnFraction;
 		};
 		Fraction() = default;
-		Fraction<float> simplify(Fraction<type> input) {
+		Fraction<type> simplify(Fraction<type> input) {
 			return input.simplify;
 		};
 		Fraction(type inputNumerator, type inputDenominator) {
@@ -136,7 +136,8 @@ namespace mathlib {
 				return tempFraction;
 			}
 
-		}Fraction<type> operator - (const Fraction<type>& input) const {
+		}
+		Fraction<type> operator - (const Fraction<type>& input) const {
 			//frac 1 num(frax2 denum) + frac2 num(frax1 denum)
 			if (this->denominator != input.denominator){
 				type resultNumerator = this->numerator * input.denominator -
@@ -152,15 +153,58 @@ namespace mathlib {
 			}
 
 		}
+		Fraction<type> operator / (const Fraction<type>& input) const {
+			type resultNumerator = this->numerator * input.denominator;
+			type resultDenominator = this->denominator * input.numerator;
+			
+			Fraction<type> tempFraction(resultNumerator, resultDenominator);
+			return tempFraction;
+
+		}
+		Fraction<type> operator * (const Fraction<type>& input) const {
+			type resultNumerator = this->numerator * input.numerator;
+			type resultDenominator = this->denominator * input.denominator;
+
+			Fraction<type> tempFraction(resultNumerator, resultDenominator);
+			return tempFraction;
+
+		}
 		friend std::ostream& operator << (std::ostream& ostream, const Fraction<type>& fraction) {
 			ostream << fraction.numerator << "/" << fraction.denominator;
 			return ostream;
 		}
-		friend std::istream& operator >> (std::istream& istream, const Fraction<type>& fraction) {
+		friend std::istream& operator >> (std::istream& istream,  Fraction<type>& fraction) {
 			istream >> fraction.numerator;
 			istream >> fraction.denominator;
 			return istream;
 		}
+		float toFloat() const {
+			return static_cast<float>(numerator) / static_cast<float>(denominator);
+		}
+		bool operator == (const Fraction<type>& input) const {
+			if (this->numerator == input.numerator && this->denominator == input.denominator) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		bool operator != (const Fraction<type>& input) const {
+			return !(*this == input);
+		}
+		bool operator < (const Fraction<type>& input) const {
+			return this->toFloat() < input.toFloat();
+		}
+		bool operator > (const Fraction<type>& input) const {
+			return this->toFloat() > input.toFloat();
+		}
+		bool operator <= (const Fraction<type>& input) const {
+			return this->toFloat() <= input.toFloat();
+		}
+		bool operator >= (const Fraction<type>& input) const {
+			return this->toFloat() >= input.toFloat();
+		}
+
 
 		type getNumerator() const { return numerator; }
 		type getDenominator() const { return denominator;}
